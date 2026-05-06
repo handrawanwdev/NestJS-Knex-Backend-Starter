@@ -18,7 +18,6 @@ import { DatabaseModule } from './database/database.module';
 // import { QueueModule } from './queue/queue.module';
 import { WorkersModule } from './workers/workers.module';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({
