@@ -1,73 +1,359 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Modular Backend Starter
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A structured, scalable, and opinionated backend starter built with **NestJS + KnexJS + PostgreSQL**, designed to enforce clean architecture, consistent patterns, and production-ready standards.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## 🚀 Overview
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+**Modular Backend Starter** is a backend template that helps developers build applications with:
 
-## Installation
+- Clear separation of concerns (Controller → Service → Repository)
+- Consistent database structure and naming
+- Scalable modular architecture
+- Production-ready patterns (auth, role, permission, queue, cache)
+- Strict development guidelines to prevent messy code
 
-```bash
-$ npm install
+This template is **opinionated by design** — it enforces best practices to maintain long-term maintainability and scalability.
+
+---
+
+## 🧱 Tech Stack
+
+- **Framework**: NestJS
+- **Database**: PostgreSQL
+- **Query Builder**: KnexJS
+- **Cache & Queue**: Redis
+- **Architecture**: Modular Monolith
+- **Language**: TypeScript
+
+---
+
+## 📁 Project Structure
+
+```
+src/
+├── app.module.ts
+├── main.ts
+├── config/
+├── database/
+├── common/
+├── modules/
+└── shared/
+
+database/
+├── knexfile.ts
+├── migrations/
+└── seeds/
 ```
 
-## Running the app
+### Key Concepts
 
-```bash
-# development
-$ npm run start
+- `modules/` → All business domains
+- `repositories/` → Database access (Knex only)
+- `services/` → Business logic
+- `controllers/` → HTTP layer
+- `database/` → Migration & seed management
 
-# watch mode
-$ npm run start:dev
+---
 
-# production mode
-$ npm run start:prod
+## 🧠 Architecture Pattern
+
+Every feature must follow:
+
+```
+Controller → Service → Repository → Database
 ```
 
-## Test
+### Rules:
 
-```bash
-# unit tests
-$ npm run test
+- Controller: handle HTTP only
+- Service: business logic
+- Repository: database query only
+- DTO: validation only
 
-# e2e tests
-$ npm run test:e2e
+---
 
-# test coverage
-$ npm run test:cov
+## 🗄️ Database Standards
+
+### Table Naming
+
+```
+{domain}_{entity}
 ```
 
-## Support
+Example:
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```
+auth_user
+auth_role
+village
+booking
+```
 
-## Stay in touch
+### Column Naming
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+- Use `snake_case`
+- Required fields:
+  - `id` (primary key)
+  - `uuid` (public identifier)
+  - `created_at`
+  - `updated_at`
 
-## License
+### UUID vs ID
 
-Nest is [MIT licensed](LICENSE).
+- `id` → internal (number, primary key)
+- `uuid` → public (used in API)
+
+---
+
+## 🔐 Authentication & Authorization
+
+### Roles
+
+- `super_admin`
+- `admin`
+- `staff`
+
+### Permission Format
+
+```
+{module}:{action}
+```
+
+Example:
+
+```
+user:create
+user:read
+village:update
+```
+
+---
+
+## 🔄 Migration & Seed
+
+### Migration
+
+Location:
+
+```
+database/migrations/
+```
+
+Rules:
+
+- Always include `up` and `down`
+- Never modify existing migration
+- Use snake_case naming
+
+### Seed
+
+Location:
+
+```
+database/seeds/
+```
+
+Used for:
+
+- Roles
+- Permissions
+- Initial system data
+
+---
+
+## ⚡ Redis Usage
+
+Used for:
+
+- Cache
+- Lock
+- Queue
+- Rate limiting
+
+### Key Format
+
+```
+app:{feature}:{identifier}
+```
+
+Example:
+
+```
+app:cache:user:1
+app:lock:register
+```
+
+---
+
+## 🧵 Queue & Worker
+
+Use background jobs for:
+
+- Heavy processing
+- Reports
+- Import/export
+- Cleanup tasks
+
+Rules:
+
+- Do not block HTTP request
+- Jobs must be idempotent
+- Always log failures
+
+---
+
+## 📦 Module Structure
+
+```
+modules/{module-name}/
+├── controllers/
+├── services/
+├── repositories/
+├── dto/
+├── constants/
+├── enums/
+├── types/
+└── mappers/
+```
+
+---
+
+## 📡 API Response Standard
+
+### Success
+
+```json
+{
+  "status": 200,
+  "message": "Success",
+  "data": {}
+}
+```
+
+### Error
+
+```json
+{
+  "status": 400,
+  "message": "Bad Request",
+  "data": null,
+  "error": "Validation error"
+}
+```
+
+---
+
+## 🔒 Security Guidelines
+
+- Always hash passwords
+- Never expose sensitive data
+- Use environment variables for secrets
+- Protect routes with roles/permissions
+- Prevent SQL injection via query builder
+
+---
+
+## 🛠️ Development Rules
+
+### Do
+
+- Use repository for all DB queries
+- Use service for business logic
+- Use DTO for validation
+- Follow naming conventions strictly
+
+### Don't
+
+- Write queries in controller
+- Mix business logic in repository
+- Use camelCase in database
+- Expose internal IDs publicly
+- Hardcode secrets
+
+---
+
+## 🧪 Getting Started
+
+### 1. Install Dependencies
+
+```
+npm install
+```
+
+### 2. Setup Environment
+
+Copy `.env.example`:
+
+```
+cp .env.example .env
+```
+
+Update configuration as needed.
+
+### 3. Run Migration
+
+```
+npm run migrate
+```
+
+### 4. Run Seed
+
+```
+npm run seed
+```
+
+### 5. Start Development Server
+
+```
+npm run start:dev
+```
+
+---
+
+## 📈 Scalability
+
+This project uses **modular monolith architecture** by default.
+
+It can be upgraded into microservices if needed:
+
+```
+apps/
+libs/
+```
+
+---
+
+## 🎯 Goal
+
+This template exists to:
+
+- Prevent messy backend structure
+- Enforce consistency across teams
+- Accelerate development with best practices
+- Provide a solid foundation for scalable systems
+
+---
+
+## 📌 Philosophy
+
+> Structure over speed.
+> Consistency over creativity.
+> Discipline over shortcuts.
+
+---
+
+## 🧩 Future Improvements
+
+- CLI generator for modules
+- Built-in auth module
+- Logging & monitoring integration
+- Testing setup (unit & e2e)
+- Docker & CI/CD pipeline
+
+---
+
+## 📄 License
+
+MIT License
