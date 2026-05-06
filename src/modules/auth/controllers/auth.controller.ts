@@ -1,85 +1,38 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpStatus,
-  Param,
-  Patch,
-  Post,
-  Query,
-} from '@nestjs/common';
+import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
-import { CreateAuthDto } from '../dto/create-auth.dto';
-import { UpdateAuthDto } from '../dto/update-auth.dto';
+import { LoginDto } from '../dto/login.dto';
+import { RegisterFirstAccountDto } from '../dto/register-first-account.dto';
+import { RegisterVillageUserDto } from '../dto/register-village-user.dto';
 
-@Controller('v1/auths')
+@Controller('v1/auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
-  private response<T = any>(
-    data: T,
-    message = 'Success',
-    status = HttpStatus.OK,
+  @Post('register-first-account')
+  async registerFirstAccount(@Body() payload: RegisterFirstAccountDto) {
+    return this.authService.registerFirstAccount(payload);
+  }
+
+  @Post('login')
+  async login(@Body() payload: LoginDto) {
+    return this.authService.login(payload);
+  }
+
+  /**
+   * Aktifkan guard ini jika JwtStrategy sudah dibuat.
+   *
+   * @UseGuards(AuthGuard('jwt'))
+   */
+  @Post('register')
+  async registerVillageUser(
+    @Body() payload: RegisterVillageUserDto,
+    @Req() req: any,
   ) {
-    return {
-      status,
-      message,
-      data,
-    };
-  }
-
-  @Post()
-  async create(@Body() payload: CreateAuthDto) {
-    const data = await this.authService.create(payload);
-
-    return this.response(
-      data,
-      'Auth created successfully',
-      HttpStatus.CREATED,
-    );
-  }
-
-  @Get()
-  async findAll(@Query() query: Record<string, any>) {
-    const data = await this.authService.findAll(query);
-
-    return this.response(
-      data,
-      'Auth list retrieved successfully',
-    );
-  }
-
-  @Get(':uuid')
-  async findOne(@Param('uuid') uuid: string) {
-    const data = await this.authService.findOne(uuid);
-
-    return this.response(
-      data,
-      'Auth detail retrieved successfully',
-    );
-  }
-
-  @Patch(':uuid')
-  async update(
-    @Param('uuid') uuid: string,
-    @Body() payload: UpdateAuthDto,
-  ) {
-    const data = await this.authService.update(uuid, payload);
-
-    return this.response(
-      data,
-      'Auth updated successfully',
-    );
-  }
-
-  @Delete(':uuid')
-  async remove(@Param('uuid') uuid: string) {
-    await this.authService.remove(uuid);
-
-    return this.response(
-      null,
-      'Auth deleted successfully',
-    );
+    /**
+     * Sementara currentUser diambil dari req.user.
+     * Setelah JwtStrategy aktif, req.user harus berisi:
+     * id, uuid, email, village_id, roles, permissions.
+     */
+    return this.authService.registerVillageUser(payload, req.user);
   }
 }

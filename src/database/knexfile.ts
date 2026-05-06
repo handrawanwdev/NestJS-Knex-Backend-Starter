@@ -29,7 +29,7 @@ const config: Knex.Config = {
     },
 
     seeds: {
-        directory: path.join(rootDir, 'src/database/migrations'),
+        directory: path.join(rootDir, 'src/database/seeds'),
         extension: 'ts',
     },
 };
